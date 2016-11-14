@@ -81,7 +81,7 @@ The view won't do anything until you subscribe to the exposed observables:
 
 ## Binaries
 
-[![Release](https://jitpack.io/v/andrefio/Rx.Widgets.svg)](https://jitpack.io/#andrefio/Rx.Widgets)
+[![Release](https://jitpack.io/v/io.andref/Rx.Widgets.svg)](https://jitpack.io/#io.andref/Rx.Widgets)
 
 Add the JitPack repository to your root build.gradle at the end of repositories:
 
@@ -98,7 +98,7 @@ And then add this library to your project:
 
 ```groovy
    dependencies {
-        compile 'com.github.andrefio:Rx.Widgets:1.0.0'
+        compile 'io.andref:Rx.Widgets:1.0.0'
    }
 ```
 
