@@ -9,15 +9,24 @@ import java.util.List;
 
 import io.andref.rx.widgets.ExpandableButtonGroup;
 import rx.Observable;
+import rx.Subscription;
 import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity
 {
+    List<Subscription> subscriptions = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
 
         List<ExpandableButtonGroup.Item> items = new ArrayList<>();
 
@@ -36,37 +45,58 @@ public class MainActivity extends AppCompatActivity
         final ExpandableButtonGroup expandableButtonGroup = (ExpandableButtonGroup) findViewById(R.id.expandable_button_group);
         expandableButtonGroup.setItems(items);
 
-        expandableButtonGroup.lessItemClicks()
-                .subscribe(new Action1<Void>()
-                {
-                    @Override
-                    public void call(Void aVoid)
-                    {
-                        expandableButtonGroup.showLessItems();
-                    }
-                });
+        subscriptions.add(
+                expandableButtonGroup.lessItemClicks()
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                expandableButtonGroup.showLessItems();
+                            }
+                        })
+        );
 
-        expandableButtonGroup.moreItemClicks()
-                .subscribe(new Action1<Void>()
-                {
-                    @Override
-                    public void call(Void aVoid)
-                    {
-                        expandableButtonGroup.showMoreItems();
-                    }
-                });
+        subscriptions.add(
+                expandableButtonGroup.moreItemClicks()
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                expandableButtonGroup.showMoreItems();
+                            }
+                        })
+        );
 
 
-        for (Observable<ExpandableButtonGroup.Item> itemss : expandableButtonGroup.itemClicks())
+
+        for (Observable<ExpandableButtonGroup.Item> item : expandableButtonGroup.itemClicks())
         {
-            itemss.subscribe(new Action1<ExpandableButtonGroup.Item>()
+            subscriptions.add(
+                    item.subscribe(new Action1<ExpandableButtonGroup.Item>()
+                    {
+                        @Override
+                        public void call(ExpandableButtonGroup.Item item)
+                        {
+                            Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+            );
+        }
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        if (subscriptions != null)
+        {
+            for (Subscription subscription : subscriptions)
             {
-                @Override
-                public void call(ExpandableButtonGroup.Item item)
-                {
-                    Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                subscription.unsubscribe();
+            }
         }
     }
 }

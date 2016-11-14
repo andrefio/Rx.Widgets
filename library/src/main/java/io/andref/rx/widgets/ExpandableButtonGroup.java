@@ -132,19 +132,15 @@ public class ExpandableButtonGroup extends FrameLayout
     {
         super.onRestoreInstanceState(((Bundle) state).getParcelable(SAVED_INSTANCE_STATE));
 
-
-
         int visibility = ((Bundle) state).getInt(IS_VISIBLE);
         if (visibility == VISIBLE)
         {
             mContainer2.setVisibility(VISIBLE);
-            mHiddenButton.setVisibility(VISIBLE);
             mMoreItemsButton.setVisibility(GONE);
         }
         else
         {
             mContainer2.setVisibility(GONE);
-            mHiddenButton.setVisibility(GONE);
             mMoreItemsButton.setVisibility(VISIBLE);
         }
     }
@@ -225,7 +221,7 @@ public class ExpandableButtonGroup extends FrameLayout
                     relativeLayout.setGravity(Gravity.CENTER);
 
                     mHiddenButton = itemView;
-                    mHiddenButton.setVisibility(GONE);
+                    mHiddenButton.setVisibility(mContainer2.getVisibility());
 
                     relativeLayout.addView(mHiddenButton);
                     relativeLayout.addView(mMoreItemsButton);
