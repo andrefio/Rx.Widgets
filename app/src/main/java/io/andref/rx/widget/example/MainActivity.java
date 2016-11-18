@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.andref.rx.widgets.ExpandableButtonGroup;
-import rx.Observable;
-import rx.Subscription;
 import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends AppCompatActivity
 {
-    List<Subscription> subscriptions = new ArrayList<>();
+    CompositeSubscription mSubscriptions = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity
         final ExpandableButtonGroup expandableButtonGroup = (ExpandableButtonGroup) findViewById(R.id.expandable_button_group);
         expandableButtonGroup.setItems(items);
 
-        subscriptions.add(
+        mSubscriptions.add(
                 expandableButtonGroup.lessItemClicks()
                         .subscribe(new Action1<Void>()
                         {
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity
                         })
         );
 
-        subscriptions.add(
+        mSubscriptions.add(
                 expandableButtonGroup.moreItemClicks()
                         .subscribe(new Action1<Void>()
                         {
@@ -69,34 +68,23 @@ public class MainActivity extends AppCompatActivity
                         })
         );
 
-
-
-        for (Observable<ExpandableButtonGroup.Item> item : expandableButtonGroup.itemClicks())
-        {
-            subscriptions.add(
-                    item.subscribe(new Action1<ExpandableButtonGroup.Item>()
-                    {
-                        @Override
-                        public void call(ExpandableButtonGroup.Item item)
+        mSubscriptions.add(
+                expandableButtonGroup.itemClicks()
+                        .subscribe(new Action1<ExpandableButtonGroup.Item>()
                         {
-                            Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-            );
-        }
+                            @Override
+                            public void call(ExpandableButtonGroup.Item item)
+                            {
+                                Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+        );
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
-
-        if (subscriptions != null)
-        {
-            for (Subscription subscription : subscriptions)
-            {
-                subscription.unsubscribe();
-            }
-        }
+        mSubscriptions.unsubscribe();
     }
 }

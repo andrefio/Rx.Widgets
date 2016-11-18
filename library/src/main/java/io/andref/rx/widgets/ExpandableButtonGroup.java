@@ -41,7 +41,8 @@ public class ExpandableButtonGroup extends FrameLayout
     private static final String IS_VISIBLE = "isVisible";
 
     private List<Item> mItems = new ArrayList<>();
-    private List<Observable<Item>> mItemClicks = new ArrayList<>();
+
+    private Observable<Item> mItemClicks;
     private Observable<Void> mLessItemsClicks;
     private Observable<Void> mMoreItemsClicks;
 
@@ -67,19 +68,19 @@ public class ExpandableButtonGroup extends FrameLayout
     public ExpandableButtonGroup(@NonNull Context context)
     {
         super(context);
-        initializeViews(context, null, 0);
+        initializeViews(context, null, 0, 0);
     }
 
     public ExpandableButtonGroup(@NonNull Context context, @Nullable AttributeSet attrs)
     {
         super(context, attrs);
-        initializeViews(context, attrs, 0);
+        initializeViews(context, attrs, 0, 0);
     }
 
     public ExpandableButtonGroup(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
-        initializeViews(context, attrs, defStyleAttr);
+        initializeViews(context, attrs, defStyleAttr, 0);
 
     }
 
@@ -87,10 +88,10 @@ public class ExpandableButtonGroup extends FrameLayout
     public ExpandableButtonGroup(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes)
     {
         super(context, attrs, defStyleAttr, defStyleRes);
-        initializeViews(context, attrs, defStyleAttr);
+        initializeViews(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void initializeViews(Context context, AttributeSet attrs, int defStyleAttr)
+    private void initializeViews(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes)
     {
         final TypedArray a = context.getTheme()
                 .obtainStyledAttributes(attrs, R.styleable.ExpandableButtonGroup, defStyleAttr, 0);
@@ -189,6 +190,8 @@ public class ExpandableButtonGroup extends FrameLayout
         LinearLayout rowView = new LinearLayout(getContext());
         rowView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        List<Observable<Item>> itemObservables = new ArrayList<>();
+
         for (int position = 0; position < mItems.size(); position++)
         {
             // Start a new row when the previous one is filled.
@@ -233,7 +236,7 @@ public class ExpandableButtonGroup extends FrameLayout
                     rowView.addView(itemView, mWeightedLayoutParams);
                 }
 
-                mItemClicks.add(
+                itemObservables.add(
                         RxView.clicks(itemView)
                                 .map(new Func1<Void, Item>()
                                 {
@@ -245,6 +248,8 @@ public class ExpandableButtonGroup extends FrameLayout
                                 })
                 );
             }
+
+            mItemClicks = Observable.merge(itemObservables);
         }
 
         // Just add the "less" button if the last row doesn't have maximum items per row yet.
@@ -288,7 +293,7 @@ public class ExpandableButtonGroup extends FrameLayout
 
     // endregion
 
-    public List<Observable<Item>> itemClicks()
+    public Observable<Item> itemClicks()
     {
         return mItemClicks;
     }

@@ -64,17 +64,15 @@ The view won't do anything until you subscribe to the exposed observables:
 
 
         // Subscribe to all the other item clicks.
-        for (Observable<ExpandableButtonGroup.Item> item : expandableButtonGroup.itemClicks())
-        {
-            item.subscribe(new Action1<ExpandableButtonGroup.Item>()
-            {
-                @Override
-                public void call(ExpandableButtonGroup.Item item)
+        expandableButtonGroup.itemClicks()
+                .subscribe(new Action1<ExpandableButtonGroup.Item>()
                 {
-                    Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+                    @Override
+                    public void call(ExpandableButtonGroup.Item item)
+                    {
+                        Toast.makeText(getBaseContext(), item.getText(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 ```
 
 > *NOTE*: Please don't forget to unsubscribe when you're done observing.
