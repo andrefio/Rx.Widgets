@@ -96,7 +96,7 @@ And then add this library to your project:
 
 ```groovy
    dependencies {
-        compile 'io.andref:Rx.Widgets:1.0.0'
+        compile 'io.andref:Rx.Widgets:1.0.1'
    }
 ```
 
