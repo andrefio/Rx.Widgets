@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="rxw_avatar_with_two_lines_and_icon_tile_height">72dp</dimen>
+    <dimen name="rxw_avatar_with_two_lines_and_icon_avatar_start_padding">16dp</dimen>
+    <dimen name="rxw_avatar_with_two_lines_and_icon_icon_end_padding">16dp</dimen>
+    <dimen name="rxw_avatar_with_two_lines_and_icon_text_end_padding">16dp</dimen>
+    <dimen name="rxw_avatar_with_two_lines_and_icon_text_start_padding">72dp</dimen>
+    <dimen name="rxw_dense_avatar_with_two_lines_and_icon_tile_height">60dp</dimen>
+    <dimen name="rxw_list_divider_height">1dp</dimen>
+</resources>

@@ -1,4 +1,6 @@
 # Rx.Widgets
+[![Release](https://jitpack.io/v/io.andref/Rx.Widgets.svg)](https://jitpack.io/#io.andref/Rx.Widgets)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 Materially inspired widgets and views.
 
@@ -9,22 +11,21 @@ Materially inspired widgets and views.
 Add the widget to your view:
 
 ```xml
-    <io.andref.rx.widgets.ExpandableButtonGroup
-        android:id="@+id/expandable_button_group"
+    <io.andref.rx.widgets.ExpandableButtonGroupLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:padding="16dp"
-        app:backgroundTint="@color/colorAccent"
-        app:drawableLess="@drawable/ic_expand_less_black_24dp"
-        app:drawableMore="@drawable/ic_expand_more_black_24dp"
-        app:drawableTint="@android:color/white"
-        app:itemsPerRow="4"
-        app:lessText="@string/less"
-        app:moreText="@string/more"/>
+        app:rxw_backgroundTint="@color/colorAccent"
+        app:rxw_drawableLess="@drawable/ic_expand_less_black_24dp"
+        app:rxw_drawableMore="@drawable/ic_expand_more_black_24dp"
+        app:rxw_drawableTint="@android:color/white"
+        app:rxw_itemsPerRow="4"
+        app:rxw_lessText="@string/less"
+        app:rxw_moreText="@string/more"/>
 
 ```
 
-All the available attributes are above and should be self explainatory. Please open an issue if there's one you'd like to see.
+All the available attributes are above and should be self explanatory. Please open an issue if there's one you'd like to see.
 
 Next, give the view some items to display:
 
@@ -75,11 +76,80 @@ The view won't do anything until you subscribe to the exposed observables:
                 });
 ```
 
-> *NOTE*: Please don't forget to unsubscribe when you're done observing.
+### ListViewCard
+
+Add the widget to your view:
+
+```xml
+    <io.andref.rx.widgets.ListViewCard
+        android:id="@+id/list_view_card"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_width="match_parent"
+        app:rxw_avatarAlpha="1"
+        app:rxw_avatarTint="@color/colorAccent"
+        app:rxw_denseLayout="true"
+        app:rxw_iconAlpha=".27"/>
+```
+
+All the available attributes are above and should be self explanatory. Please open an issue if there's one you'd like to see.
+
+Next, give the view some items to display:
+
+```java
+        List<ListViewCard.Item> listViewCardItems = new ArrayList<>();
+        listViewCardItems.add([...]);
+
+        mListViewCard = (ListViewCard) findViewById(R.id.list_view_card);
+        mListViewCard.setButtonText("");
+        mListViewCard.setItems(listViewCardItems);
+
+```
+
+To handle the clicks you must subscribe to the exposed observables:
+
+```java
+
+    listViewCard.itemClicks()
+            .subscribe(new Action1<ListViewCard.Item>()
+            {
+                @Override
+                public void call(ListViewCard.Item item)
+                {
+                    Toast.makeText(getBaseContext(), item.getLine1(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+    listViewCard.iconClicks()
+            .subscribe(new Action1<ListViewCard.Item>()
+            {
+                @Override
+                public void call(ListViewCard.Item item)
+                {
+                    Toast.makeText(getBaseContext(), "Icon Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+    listViewCard.buttonClicks()
+            .subscribe(new Action1<Void>()
+            {
+                @Override
+                public void call(Void aVoid)
+                {
+                    Toast.makeText(getBaseContext(), "Button Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+```
+
+> *Fun Fact:* Even though this widget is called `ListViewCard` it does not contain a `ListView`. So, why call it that? Because we felt it best conveyed what this widget is supposed to do.
+
+## Friendly Reminder
+
+Don't forget to unsubscribe when you're done observing!
 
 ## Binaries
-
-[![Release](https://jitpack.io/v/io.andref/Rx.Widgets.svg)](https://jitpack.io/#io.andref/Rx.Widgets)
 
 Add the JitPack repository to your root build.gradle at the end of repositories:
 
@@ -96,7 +166,7 @@ And then add this library to your project:
 
 ```groovy
    dependencies {
-        compile 'io.andref:Rx.Widgets:1.0.1'
+        compile 'io.andref:Rx.Widgets:1.1.0'
    }
 ```
 

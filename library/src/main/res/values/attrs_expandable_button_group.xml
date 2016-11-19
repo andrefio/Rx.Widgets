@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <declare-styleable name="ExpandableButtonGroup">
-        <attr name="backgroundTint" format="color"/>
-        <attr name="drawableLess" format="reference"/>
-        <attr name="drawableMore" format="reference"/>
-        <attr name="drawableTint" format="color"/>
-        <attr name="itemsPerRow" format="integer"/>
-        <attr name="lessText" format="string"/>
-        <attr name="moreText" format="string"/>
+        <attr name="rxw_backgroundTint" format="color"/>
+        <attr name="rxw_drawableLess" format="reference"/>
+        <attr name="rxw_drawableMore" format="reference"/>
+        <attr name="rxw_drawableTint" format="color"/>
+        <attr name="rxw_itemsPerRow" format="integer"/>
+        <attr name="rxw_lessText" format="string"/>
+        <attr name="rxw_moreText" format="string"/>
     </declare-styleable>
 </resources>

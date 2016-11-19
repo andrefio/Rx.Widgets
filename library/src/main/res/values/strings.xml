@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Rx.Widgets</string>
-
     <string name="less">Less</string>
     <string name="more">More</string>
+
+    <string name="rxw_two_line_item"/>
+    <string name="rxw_secondary_text"/>
 </resources>

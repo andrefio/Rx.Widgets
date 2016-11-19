@@ -1,24 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    android:layout_width="match_parent"
-    tools:context=".MainActivity">
+    android:layout_width="match_parent">
 
-    <io.andref.rx.widgets.ExpandableButtonGroup
-        android:id="@+id/expandable_button_group"
+    <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:padding="16dp"
-        app:backgroundTint="@color/colorAccent"
-        app:drawableLess="@drawable/ic_expand_less_black_24dp"
-        app:drawableMore="@drawable/ic_expand_more_black_24dp"
-        app:drawableTint="@android:color/white"
-        app:itemsPerRow="4"
-        app:lessText="@string/less"
-        app:moreText="@string/more"/>
+        android:orientation="vertical">
 
-</android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            tools:context=".MainActivity">
+
+            <io.andref.rx.widgets.ExpandableButtonGroup
+                android:id="@+id/expandable_button_group"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:padding="16dp"
+                app:rxw_backgroundTint="@color/colorAccent"
+                app:rxw_drawableLess="@drawable/ic_expand_less_black_24dp"
+                app:rxw_drawableMore="@drawable/ic_expand_more_black_24dp"
+                app:rxw_drawableTint="@android:color/white"
+                app:rxw_itemsPerRow="4"
+                app:rxw_lessText="@string/less"
+                app:rxw_moreText="@string/more"/>
+
+        </android.support.v7.widget.CardView>
+
+        <io.andref.rx.widgets.ListViewCard
+            android:id="@+id/list_view_card"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            app:rxw_avatarAlpha="1"
+            app:rxw_avatarTint="@color/colorAccent"
+            app:rxw_denseLayout="true"
+            app:rxw_iconAlpha=".27"/>
+
+
+    </LinearLayout>
+
+</ScrollView>

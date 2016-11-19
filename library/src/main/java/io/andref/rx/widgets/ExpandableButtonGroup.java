@@ -18,7 +18,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -98,26 +97,25 @@ public class ExpandableButtonGroup extends FrameLayout
 
         try
         {
-            mBackgroundTint = a.getColor(R.styleable.ExpandableButtonGroup_backgroundTint, Color.BLUE);
-            mDrawableLess = a.getResourceId(R.styleable.ExpandableButtonGroup_drawableLess, 0);
-            mDrawableMore = a.getResourceId(R.styleable.ExpandableButtonGroup_drawableMore, 0);
-            mDrawableTint = a.getColor(R.styleable.ExpandableButtonGroup_drawableTint, Color.WHITE);
-            mItemsPerRow = a.getInt(R.styleable.ExpandableButtonGroup_itemsPerRow, 4);
-            mLessText = a.getString(R.styleable.ExpandableButtonGroup_lessText);
-            mMoreText = a.getString(R.styleable.ExpandableButtonGroup_moreText);
+            mBackgroundTint = a.getColor(R.styleable.ExpandableButtonGroup_rxw_backgroundTint, Color.BLUE);
+            mDrawableLess = a.getResourceId(R.styleable.ExpandableButtonGroup_rxw_drawableLess, 0);
+            mDrawableMore = a.getResourceId(R.styleable.ExpandableButtonGroup_rxw_drawableMore, 0);
+            mDrawableTint = a.getColor(R.styleable.ExpandableButtonGroup_rxw_drawableTint, Color.WHITE);
+            mItemsPerRow = a.getInt(R.styleable.ExpandableButtonGroup_rxw_itemsPerRow, 4);
+            mLessText = a.getString(R.styleable.ExpandableButtonGroup_rxw_lessText);
+            mMoreText = a.getString(R.styleable.ExpandableButtonGroup_rxw_moreText);
         }
         finally
         {
             a.recycle();
         }
 
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        layoutInflater.inflate(R.layout.expandable_button_group, this);
+        inflate(getContext(), R.layout.rxw_expandable_button_group, this);
 
-        mLessItemsButton = createItemView(getContext(), mLessText, mBackgroundTint, mDrawableLess, mDrawableTint);
+        mLessItemsButton = createItemView(mLessText, mBackgroundTint, mDrawableLess, mDrawableTint);
         mLessItemsClicks = RxView.clicks(mLessItemsButton);
 
-        mMoreItemsButton = createItemView(getContext(), mMoreText, mBackgroundTint, mDrawableMore, mDrawableTint);
+        mMoreItemsButton = createItemView(mMoreText, mBackgroundTint, mDrawableMore, mDrawableTint);
         mMoreItemsClicks = RxView.clicks(mMoreItemsButton);
 
         // There are two containers. The first, the top row, is always visible. The second,
@@ -137,11 +135,13 @@ public class ExpandableButtonGroup extends FrameLayout
         if (visibility == VISIBLE)
         {
             mContainer2.setVisibility(VISIBLE);
+            mHiddenButton.setVisibility(VISIBLE);
             mMoreItemsButton.setVisibility(GONE);
         }
         else
         {
             mContainer2.setVisibility(GONE);
+            mHiddenButton.setVisibility(GONE);
             mMoreItemsButton.setVisibility(VISIBLE);
         }
     }
@@ -158,16 +158,16 @@ public class ExpandableButtonGroup extends FrameLayout
         return bundle;
     }
 
-    private View createItemView(Context context, String text, int backgroundTint, int drawableId, int drawableTint)
+    private View createItemView(String text, int backgroundTint, int drawableId, int drawableTint)
     {
-        View itemView = LayoutInflater.from(context).inflate(R.layout.expandable_button_group_item, null);
+        View itemView = inflate(getContext(), R.layout.rxw_expandable_button_group_item, null);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) itemView.findViewById(R.id.floating_action_button);
         floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(backgroundTint));
 
         try
         {
-            Drawable drawable = context.getResources().getDrawable(drawableId);
+            Drawable drawable = getResources().getDrawable(drawableId);
             if (drawable != null)
             {
                 drawable.mutate().setColorFilter(drawableTint, PorterDuff.Mode.SRC_ATOP);
@@ -187,6 +187,9 @@ public class ExpandableButtonGroup extends FrameLayout
 
     private void layoutViews()
     {
+        mContainer1.removeAllViews();
+        mContainer2.removeAllViews();
+
         LinearLayout rowView = new LinearLayout(getContext());
         rowView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -213,7 +216,7 @@ public class ExpandableButtonGroup extends FrameLayout
             final Item item = mItems.get(position);
             if (item != null)
             {
-                View itemView = createItemView(getContext(), item.getText(), mBackgroundTint, item.getImageDrawable(), mDrawableTint);
+                View itemView = createItemView(item.getText(), mBackgroundTint, item.getImageDrawable(), mDrawableTint);
 
                 // If this is the last item in the top row, and there are
                 // more to display, we want to show a "more" button.
@@ -347,7 +350,7 @@ public class ExpandableButtonGroup extends FrameLayout
             return mData;
         }
 
-        public void setmData(T data)
+        public void setData(T data)
         {
             mData = data;
         }
