@@ -143,11 +143,15 @@ To handle the clicks you must subscribe to the exposed observables:
 
 ```
 
-> *Fun Fact:* Even though this widget is called `ListViewCard` it does not contain a `ListView`. So, why call it that? Because we felt it best conveyed what this widget is supposed to do.
+> *Fun Fact:* Even though this widget is called `ListViewCard` it does not contain a `ListView`. So, why call it that? Because we felt it best conveyed what this widget is supposed to do: Display a list of items inside a card.
 
 ## Friendly Reminder
 
 Don't forget to unsubscribe when you're done observing!
+
+## Note
+
+This library is under active development so expect some breaking changes as we ramp up. We'll note these changes in the release notes.
 
 ## Binaries
 
@@ -170,6 +174,13 @@ And then add this library to your project:
    }
 ```
 
+Or if you want a specific revision:
+
+```groovy
+   dependencies {
+        compile 'io.andref:Rx.Widgets:5dda428'
+   }
+```
 
 ## License
 
