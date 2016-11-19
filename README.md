@@ -88,6 +88,7 @@ Add the widget to your view:
         android:layout_width="match_parent"
         app:rxw_avatarAlpha="1"
         app:rxw_avatarTint="@color/colorAccent"
+        app:rxw_buttonText="@string/button_to_click"
         app:rxw_denseLayout="true"
         app:rxw_iconAlpha=".27"/>
 ```
@@ -101,7 +102,6 @@ Next, give the view some items to display:
         listViewCardItems.add([...]);
 
         mListViewCard = (ListViewCard) findViewById(R.id.list_view_card);
-        mListViewCard.setButtonText("");
         mListViewCard.setItems(listViewCardItems);
 
 ```

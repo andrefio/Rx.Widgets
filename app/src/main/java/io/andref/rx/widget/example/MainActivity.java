@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity
         listViewCardItems.add(new ListViewCard.Item("andrefio@example.com", "Office E-mail", R.drawable.ic_email_black_24dp, 0));
 
         mListViewCard = (ListViewCard) findViewById(R.id.list_view_card);
-        mListViewCard.setButtonText("Button to click");
         mListViewCard.setItems(listViewCardItems);
     }
 

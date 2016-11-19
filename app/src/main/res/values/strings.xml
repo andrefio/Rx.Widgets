@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Rx.Widgets</string>
+    <string name="button_to_click">Button to click</string>
 </resources>

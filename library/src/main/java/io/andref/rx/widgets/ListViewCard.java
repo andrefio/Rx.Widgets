@@ -45,6 +45,7 @@ public class ListViewCard extends FrameLayout
 
     private float mAvatarAlpha;
     private int mAvatarTint;
+    private String mButtonText;
     private boolean mDenseListItem;
     private float mIconAlpha;
 
@@ -76,6 +77,8 @@ public class ListViewCard extends FrameLayout
 
     private void initializeViews(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes)
     {
+        String buttonText;
+
         final TypedArray a = context.getTheme()
                 .obtainStyledAttributes(attrs, R.styleable.ListViewCard, defStyleAttr, 0);
 
@@ -85,6 +88,8 @@ public class ListViewCard extends FrameLayout
             mAvatarTint = a.getColor(R.styleable.ListViewCard_rxw_avatarTint, Color.BLACK);
             mDenseListItem = a.getBoolean(R.styleable.ListViewCard_rxw_denseLayout, false);
             mIconAlpha = a.getFloat(R.styleable.ListViewCard_rxw_iconAlpha, .54f);
+
+            buttonText = a.getString(R.styleable.ListViewCard_rxw_buttonText);
         }
         finally
         {
@@ -100,6 +105,7 @@ public class ListViewCard extends FrameLayout
         frameLayout.setLayoutParams(layoutParams);
 
         mButton = (TextView) cardView.findViewById(R.id.button_text);
+        mButton.setText(buttonText);
         mButtonClicks = RxView.clicks(frameLayout);
 
         mContainer = (LinearLayout) cardView.findViewById(R.id.container);

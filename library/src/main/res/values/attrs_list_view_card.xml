@@ -3,6 +3,7 @@
     <declare-styleable name="ListViewCard">
         <attr name="rxw_avatarAlpha" format="float"/>
         <attr name="rxw_avatarTint" format="color"/>
+        <attr name="rxw_buttonText" format="string"/>
         <attr name="rxw_denseLayout" format="boolean"/>
         <attr name="rxw_iconAlpha" format="float"/>
     </declare-styleable>
