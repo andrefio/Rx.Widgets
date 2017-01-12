@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rx.Widgets</string>
+    <string name="app_name" translatable="false">Rx.Widgets</string>
     <string name="less">Less</string>
     <string name="more">More</string>
 
