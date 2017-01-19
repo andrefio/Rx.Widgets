@@ -29,6 +29,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.subjects.PublishSubject;
 
 public class ListViewCard extends FrameLayout
 {
@@ -36,9 +37,9 @@ public class ListViewCard extends FrameLayout
 
     private List<Item> mItems = new ArrayList<>();
 
-    private Observable<Void> mButtonClicks;
-    private Observable<Item> mItemClicks;
-    private Observable<Item> mIconClicks;
+    private PublishSubject<Void> mButtonClicks = PublishSubject.create();
+    private PublishSubject<Item> mItemClicks = PublishSubject.create();
+    private PublishSubject<Item> mIconClicks = PublishSubject.create();
 
     private TextView mButton;
     private LinearLayout mContainer;
@@ -106,7 +107,8 @@ public class ListViewCard extends FrameLayout
 
         mButton = (TextView) cardView.findViewById(R.id.button_text);
         mButton.setText(buttonText);
-        mButtonClicks = RxView.clicks(frameLayout);
+        RxView.clicks(frameLayout)
+                .subscribe(mButtonClicks);
 
         mContainer = (LinearLayout) cardView.findViewById(R.id.container);
         mContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -115,9 +117,6 @@ public class ListViewCard extends FrameLayout
     private void layoutViews()
     {
         mContainer.removeAllViews();
-
-        List<Observable<Item>> itemObservables = new ArrayList<>();
-        List<Observable<Item>> iconObservables = new ArrayList<>();
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.height = (int) (mDenseListItem ? getResources().getDimension(R.dimen.rxw_dense_avatar_with_two_lines_and_icon_tile_height)
@@ -183,8 +182,18 @@ public class ListViewCard extends FrameLayout
                     Log.e(TAG, "Drawable resource not found: " + exception.getMessage());
                 }
 
-                itemObservables.add(
-                        RxView.clicks(view)
+                RxView.clicks(view)
+                    .map(new Func1<Void, Item>()
+                    {
+                        @Override
+                        public Item call(Void aVoid)
+                        {
+                            return item;
+                        }
+                    })
+                    .subscribe(mItemClicks);
+
+                RxView.clicks(imageButton)
                         .map(new Func1<Void, Item>()
                         {
                             @Override
@@ -193,26 +202,11 @@ public class ListViewCard extends FrameLayout
                                 return item;
                             }
                         })
-                );
-
-                iconObservables.add(
-                        RxView.clicks(imageButton)
-                                .map(new Func1<Void, Item>()
-                                {
-                                    @Override
-                                    public Item call(Void aVoid)
-                                    {
-                                        return item;
-                                    }
-                                })
-                );
+                        .subscribe(mIconClicks);
 
                 mContainer.addView(view);
             }
         }
-
-        mIconClicks = Observable.merge(iconObservables);
-        mItemClicks = Observable.merge(itemObservables);
     }
 
     // region Getters/Setters
