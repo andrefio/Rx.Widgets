@@ -30,6 +30,7 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 public class ListViewCard extends FrameLayout
 {
@@ -40,6 +41,8 @@ public class ListViewCard extends FrameLayout
     private PublishSubject<Void> mButtonClicks = PublishSubject.create();
     private PublishSubject<Item> mItemClicks = PublishSubject.create();
     private PublishSubject<Item> mIconClicks = PublishSubject.create();
+
+    private CompositeSubscription mCompositeSubscription;
 
     private TextView mButton;
     private LinearLayout mContainer;
@@ -76,6 +79,20 @@ public class ListViewCard extends FrameLayout
         initializeViews(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        mCompositeSubscription = new CompositeSubscription();
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        mCompositeSubscription.unsubscribe();
+        super.onDetachedFromWindow();
+    }
+
     private void initializeViews(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes)
     {
         String buttonText;
@@ -107,8 +124,8 @@ public class ListViewCard extends FrameLayout
 
         mButton = (TextView) cardView.findViewById(R.id.button_text);
         mButton.setText(buttonText);
-        RxView.clicks(frameLayout)
-                .subscribe(mButtonClicks);
+        mCompositeSubscription.add(RxView.clicks(frameLayout)
+                .subscribe(mButtonClicks));
 
         mContainer = (LinearLayout) cardView.findViewById(R.id.container);
         mContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -182,7 +199,7 @@ public class ListViewCard extends FrameLayout
                     Log.e(TAG, "Drawable resource not found: " + exception.getMessage());
                 }
 
-                RxView.clicks(view)
+                mCompositeSubscription.add(RxView.clicks(view)
                     .map(new Func1<Void, Item>()
                     {
                         @Override
@@ -191,9 +208,9 @@ public class ListViewCard extends FrameLayout
                             return item;
                         }
                     })
-                    .subscribe(mItemClicks);
+                    .subscribe(mItemClicks));
 
-                RxView.clicks(imageButton)
+                mCompositeSubscription.add(RxView.clicks(imageButton)
                         .map(new Func1<Void, Item>()
                         {
                             @Override
@@ -202,7 +219,7 @@ public class ListViewCard extends FrameLayout
                                 return item;
                             }
                         })
-                        .subscribe(mIconClicks);
+                        .subscribe(mIconClicks));
 
                 mContainer.addView(view);
             }
