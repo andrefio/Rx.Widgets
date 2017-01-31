@@ -30,7 +30,6 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 public class ListViewCard extends FrameLayout
 {
@@ -41,8 +40,6 @@ public class ListViewCard extends FrameLayout
     private PublishSubject<Void> mButtonClicks = PublishSubject.create();
     private PublishSubject<Item> mItemClicks = PublishSubject.create();
     private PublishSubject<Item> mIconClicks = PublishSubject.create();
-
-    private CompositeSubscription mCompositeSubscription;
 
     private TextView mButton;
     private LinearLayout mContainer;
@@ -79,20 +76,6 @@ public class ListViewCard extends FrameLayout
         initializeViews(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-        mCompositeSubscription = new CompositeSubscription();
-    }
-
-    @Override
-    protected void onDetachedFromWindow()
-    {
-        mCompositeSubscription.unsubscribe();
-        super.onDetachedFromWindow();
-    }
-
     private void initializeViews(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes)
     {
         String buttonText;
@@ -124,8 +107,10 @@ public class ListViewCard extends FrameLayout
 
         mButton = (TextView) cardView.findViewById(R.id.button_text);
         mButton.setText(buttonText);
-        mCompositeSubscription.add(RxView.clicks(frameLayout)
-                .subscribe(mButtonClicks));
+
+        RxView.clicks(frameLayout)
+                .takeUntil(RxView.detaches(frameLayout))
+                .subscribe(mButtonClicks);
 
         mContainer = (LinearLayout) cardView.findViewById(R.id.container);
         mContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -133,6 +118,9 @@ public class ListViewCard extends FrameLayout
 
     private void layoutViews()
     {
+        Observable<Item> itemClicks = null;
+        Observable<Item> iconClicks = null;
+
         mContainer.removeAllViews();
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -199,18 +187,8 @@ public class ListViewCard extends FrameLayout
                     Log.e(TAG, "Drawable resource not found: " + exception.getMessage());
                 }
 
-                mCompositeSubscription.add(RxView.clicks(view)
-                    .map(new Func1<Void, Item>()
-                    {
-                        @Override
-                        public Item call(Void aVoid)
-                        {
-                            return item;
-                        }
-                    })
-                    .subscribe(mItemClicks));
-
-                mCompositeSubscription.add(RxView.clicks(imageButton)
+                Observable<Item> tempItemClicks = RxView.clicks(view)
+                        .takeUntil(RxView.detaches(view))
                         .map(new Func1<Void, Item>()
                         {
                             @Override
@@ -218,11 +196,48 @@ public class ListViewCard extends FrameLayout
                             {
                                 return item;
                             }
-                        })
-                        .subscribe(mIconClicks));
+                        });
+
+                Observable<Item> tempIconClicks = RxView.clicks(imageButton)
+                        .takeUntil(RxView.detaches(imageButton))
+                        .map(new Func1<Void, Item>()
+                        {
+                            @Override
+                            public Item call(Void aVoid)
+                            {
+                                return item;
+                            }
+                        });
+
+                if (itemClicks == null)
+                {
+                    itemClicks = tempItemClicks;
+                }
+                else
+                {
+                    itemClicks = itemClicks.mergeWith(tempItemClicks);
+                }
+
+                if (iconClicks == null)
+                {
+                    iconClicks = tempIconClicks;
+                }
+                else
+                {
+                    iconClicks = iconClicks.mergeWith(tempIconClicks);
+                }
 
                 mContainer.addView(view);
             }
+        }
+
+        if (itemClicks != null)
+        {
+            itemClicks.takeUntil(RxView.detaches(this)).subscribe(mItemClicks);
+        }
+        if (iconClicks != null)
+        {
+            iconClicks.takeUntil(RxView.detaches(this)).subscribe(mIconClicks);
         }
     }
 
