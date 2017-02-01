@@ -2,7 +2,11 @@ package io.andref.rx.widget.example;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +21,12 @@ public class MainActivity extends AppCompatActivity
     CompositeSubscription mSubscriptions;
 
     ExpandableButtonGroup mExpandableButtonGroup;
+
     ListViewCard mListViewCard;
+    Button mListViewCardButton1;
+    Button mListViewCardButton2;
+    Button mListViewCardButton3;
+    Button mListViewCardButton4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,6 +64,11 @@ public class MainActivity extends AppCompatActivity
 
         mListViewCard = (ListViewCard) findViewById(R.id.list_view_card);
         mListViewCard.setItems(listViewCardItems);
+
+        mListViewCardButton1 = (Button) findViewById(R.id.list_view_card_button_1);
+        mListViewCardButton2 = (Button) findViewById(R.id.list_view_card_button_2);
+        mListViewCardButton3 = (Button) findViewById(R.id.list_view_card_button_3);
+        mListViewCardButton4 = (Button) findViewById(R.id.list_view_card_button_4);
     }
 
     @Override
@@ -141,6 +155,57 @@ public class MainActivity extends AppCompatActivity
                         })
         );
 
+        mSubscriptions.add(
+                RxView.clicks(mListViewCardButton1)
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                mListViewCard.addItem(new ListViewCard.Item("additional@example.com", "Other E-mail", R.drawable.ic_email_black_24dp, R.drawable.ic_sms_black_24dp));
+                            }
+                        })
+        );
+
+        mSubscriptions.add(
+                RxView.clicks(mListViewCardButton2)
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                int size = mListViewCard.getItems().size();
+                                if (size > 0)
+                                {
+                                    mListViewCard.removeItem(size - 1);
+                                }
+                            }
+                        })
+        );
+
+        mSubscriptions.add(
+                RxView.clicks(mListViewCardButton3)
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                mListViewCard.hideButton();
+                            }
+                        })
+        );
+
+        mSubscriptions.add(
+                RxView.clicks(mListViewCardButton4)
+                        .subscribe(new Action1<Void>()
+                        {
+                            @Override
+                            public void call(Void aVoid)
+                            {
+                                mListViewCard.showButton();
+                            }
+                        })
+        );
     }
 
     @Override
