@@ -29,6 +29,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.subjects.PublishSubject;
 
 public class ListViewCard extends FrameLayout
 {
@@ -36,16 +37,17 @@ public class ListViewCard extends FrameLayout
 
     private List<Item> mItems = new ArrayList<>();
 
-    private Observable<Void> mButtonClicks;
-    private Observable<Item> mItemClicks;
-    private Observable<Item> mIconClicks;
+    private final PublishSubject<Item> mItemClicks = PublishSubject.create();
+    private final PublishSubject<Item> mIconClicks = PublishSubject.create();
 
-    private TextView mButton;
+    private Observable<Void> mButtonClicks = Observable.empty();
+
+    private FrameLayout mButton;
+    private TextView mButtonText;
     private LinearLayout mContainer;
 
     private float mAvatarAlpha;
     private int mAvatarTint;
-    private String mButtonText;
     private boolean mDenseListItem;
     private float mIconAlpha;
 
@@ -98,15 +100,16 @@ public class ListViewCard extends FrameLayout
 
         View cardView = inflate(context, R.layout.rxw_list_view_card, this);
 
-        FrameLayout frameLayout = (FrameLayout) cardView.findViewById(R.id.button);
+        mButton = (FrameLayout) cardView.findViewById(R.id.button);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.height = (int) (mDenseListItem ? getResources().getDimension(R.dimen.rxw_dense_avatar_with_two_lines_and_icon_tile_height)
                 : getResources().getDimension(R.dimen.rxw_avatar_with_two_lines_and_icon_tile_height));
-        frameLayout.setLayoutParams(layoutParams);
+        mButton.setLayoutParams(layoutParams);
 
-        mButton = (TextView) cardView.findViewById(R.id.button_text);
-        mButton.setText(buttonText);
-        mButtonClicks = RxView.clicks(frameLayout);
+        mButtonClicks = RxView.clicks(mButton);
+
+        mButtonText = (TextView) cardView.findViewById(R.id.button_text);
+        mButtonText.setText(buttonText);
 
         mContainer = (LinearLayout) cardView.findViewById(R.id.container);
         mContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -185,14 +188,14 @@ public class ListViewCard extends FrameLayout
 
                 itemObservables.add(
                         RxView.clicks(view)
-                        .map(new Func1<Void, Item>()
-                        {
-                            @Override
-                            public Item call(Void aVoid)
-                            {
-                                return item;
-                            }
-                        })
+                                .map(new Func1<Void, Item>()
+                                {
+                                    @Override
+                                    public Item call(Void aVoid)
+                                    {
+                                        return item;
+                                    }
+                                })
                 );
 
                 iconObservables.add(
@@ -209,32 +212,44 @@ public class ListViewCard extends FrameLayout
 
                 mContainer.addView(view);
             }
-        }
 
-        mIconClicks = Observable.merge(iconObservables);
-        mItemClicks = Observable.merge(itemObservables);
+            Observable.merge(itemObservables)
+                    .takeUntil(RxView.detaches(this))
+                    .subscribe(mItemClicks);
+
+            Observable.merge(iconObservables)
+                    .takeUntil(RxView.detaches(this))
+                    .subscribe(mIconClicks);
+        }
     }
 
     // region Getters/Setters
 
     public CharSequence getButtonText()
     {
-        return mButton.getText();
+        return mButtonText.getText();
     }
 
     public void setButtonText(CharSequence text)
     {
-        mButton.setText(text);
+        mButtonText.setText(text);
     }
 
     public void addItem(Item item)
     {
         mItems.add(item);
+        layoutViews();
     }
 
     public List<Item> getItems()
     {
         return mItems;
+    }
+
+    public void removeItem(int position)
+    {
+        mItems.remove(position);
+        layoutViews();
     }
 
     public void setItems(List<Item> items)
@@ -244,6 +259,8 @@ public class ListViewCard extends FrameLayout
     }
 
     // endregion
+
+    // region Observables
 
     public Observable<Void> buttonClicks()
     {
@@ -259,6 +276,42 @@ public class ListViewCard extends FrameLayout
     {
         return mItemClicks;
     }
+
+    // endregion
+
+    // region Actions
+
+    public void hideButton()
+    {
+        mButton.setVisibility(GONE);
+
+        if (mContainer.getChildCount() > 0)
+        {
+            View parent = mContainer.getChildAt(mContainer.getChildCount() - 1);
+            if (parent != null)
+            {
+                View view = parent.findViewById(R.id.list_item_separator);
+                view.setVisibility(INVISIBLE);
+            }
+        }
+    }
+
+    public void showButton()
+    {
+        mButton.setVisibility(VISIBLE);
+
+        if (mContainer.getChildCount() > 0)
+        {
+            View parent = mContainer.getChildAt(mContainer.getChildCount() - 1);
+            if (parent != null)
+            {
+                View view = parent.findViewById(R.id.list_item_separator);
+                view.setVisibility(VISIBLE);
+            }
+        }
+    }
+
+    // endregion
 
     public static class Item<T>
     {
