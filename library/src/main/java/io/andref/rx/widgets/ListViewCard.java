@@ -40,7 +40,7 @@ public class ListViewCard extends FrameLayout
     private final PublishSubject<Item> mItemClicks = PublishSubject.create();
     private final PublishSubject<Item> mIconClicks = PublishSubject.create();
 
-    private Observable<Void> mButtonClicks;
+    private Observable<Void> mButtonClicks = Observable.empty();
 
     private FrameLayout mButton;
     private TextView mButtonText;
