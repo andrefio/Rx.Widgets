@@ -43,6 +43,38 @@
             app:rxw_denseLayout="true"
             app:rxw_iconAlpha=".27"/>
 
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/list_view_card_button_1"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/add"/>
+
+            <Button
+                android:id="@+id/list_view_card_button_2"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/remove"/>
+
+            <Button
+                android:id="@+id/list_view_card_button_3"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/hide"/>
+
+            <Button
+                android:id="@+id/list_view_card_button_4"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/show"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
